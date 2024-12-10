@@ -1,0 +1,49 @@
+version: "3.9"
+services:
+  chill_guy_backend_app:
+    container_name: chill-guy-backend-app
+    image: chill-guy-backend-app:v1.0
+    build:
+      context: .
+      args:
+        NODE_ENV: development
+    volumes:
+      - ./app:/server/app
+      - ./config:/server/config
+      - ./index.js:/server/index.js
+      - uploads:/server/uploads
+    env_file:
+      - ./config/env/dev.env
+    ports:
+      - 8100:8100
+    command: npm run start-dev
+    depends_on:
+      - chill_guy_mongo_db
+    restart: always
+
+  chill_guy_mongo_db:
+    container_name: chill-guy-mongo-db
+    image: "mongo:latest"
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: market
+      MONGO_INITDB_ROOT_PASSWORD: pass
+    volumes:
+      - chillguy_mongo:/data/db
+
+  mongo-express:
+    container_name: chill-guy-mongo-express
+    image: mongo-express
+    restart: always
+    ports:
+      - 9650:8081
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: "chillguy"
+      ME_CONFIG_BASICAUTH_PASSWORD: "admin"
+      ME_CONFIG_MONGODB_ADMINUSERNAME: "market"
+      ME_CONFIG_MONGODB_ADMINPASSWORD: "pass"
+      ME_CONFIG_MONGODB_URL: mongodb://market:pass@chill_guy_mongo_db:27017/
+
+volumes:
+  chillguy_mongo:
+  uploads:
