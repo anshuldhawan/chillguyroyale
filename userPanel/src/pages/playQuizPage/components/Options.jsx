@@ -19,12 +19,13 @@ const Options = ({
 }) => {
   const [isDialogBoxOpen, setIsDialogBoxOpen] = useState(false);
   const badgeData = useRef(null);
+  const isLastQuestion = useRef(null);
 
-  useEffect(() => {
-    if (questionIsLoading) {
-      console.log("question array data", QUESTIONS_DATA);
-    }
-  }, [QUESTIONS_DATA, questionIsLoading]);
+  // useEffect(() => {
+  //   if (questionIsLoading) {
+  //     console.log("question array data", QUESTIONS_DATA);
+  //   }
+  // }, [QUESTIONS_DATA, questionIsLoading]);
 
   const openDialogBoxToInputName = () => {
     setIsDialogBoxOpen(true);
@@ -43,6 +44,7 @@ const Options = ({
           updateIndex((prev) => {
             if (prev === totalQuestionCount) {
               openDialogBoxToInputName();
+              isLastQuestion.current = true;
               return totalQuestionCount;
             } else {
               return prev + 1;
@@ -59,7 +61,7 @@ const Options = ({
   );
 
   const optionClickHandler = (choosedOption) => {
-    console.log("clicked option->", choosedOption);
+    // console.log("clicked option->", choosedOption);
 
     mutate({ questionId, selectedOption: choosedOption, leaderBoardId });
   };
@@ -88,6 +90,7 @@ const Options = ({
         onOpenChange={setIsDialogBoxOpen}
         badgeImage={badgeData.current?.badgeImage}
         badgeName={badgeData.current?.badgeName}
+        isLast={isLastQuestion.current}
       />
     </div>
   );

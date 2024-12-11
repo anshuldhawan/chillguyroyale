@@ -15,16 +15,16 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/routes/routeConstant";
 import { Button } from "@/components/ui/button";
 import { useIsFirstRender } from "@/hooks/useIsFirstRender";
+import ShareOnTwitter from "@/components/ShareOnTwitter";
 
 const InputNameDialogBox = ({
   isOpen,
   onOpenChange,
   badgeName,
   badgeImage,
+  isLast,
 }) => {
   const navigate = useNavigate();
-
-  console.log("badgeImage INPUT ", badgeImage);
 
   // custom hook
   const isFirstRender = useIsFirstRender();
@@ -62,21 +62,30 @@ const InputNameDialogBox = ({
     }
   }, [isOpen]);
 
+  const currentUrl = `${window.location.origin}${ROUTES.LEADERBOARD}`;
+  const tweetText = `I'm ${badgeName} in Chill Guy Royale. Check it out ! #chillguyroyale`;
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="w-[90%] sm:w-full sm:max-w-xs md:w-full md:max-w-md lg:w-full lg:max-w-lg xl:w-full xl:max-w-xl h-full max-h-[20rem] px-1  sm:px-2 md:px-3 lg:px-4 xl:px-6">
+        <DialogContent className="w-[90%] sm:w-full sm:max-w-xs md:w-full md:max-w-md lg:w-full lg:max-w-lg xl:w-full xl:max-w-xl h-auto px-1 sm:px-2 md:px-3 lg:px-4 xl:px-6">
           <DialogHeader>
             <DialogTitle className="text-xl text-center text-sky-500 capitalize font-indieFlower">
               Please Enter Your Name
             </DialogTitle>
             <DialogDescription className="text-sm text-center text-sky-800 font-indieFlower">
               {badgeName ? (
-                <span>
-                  <strong>Congratulations! 🎉</strong> You've won the{" "}
-                  <span className="text-xl font-bold">{badgeName}</span> Badge!
-                  🏆
-                </span>
+                isLast ? (
+                  <span>
+                    <strong>Congratulations! 🎉</strong> You've won the{" "}
+                    <span className="text-xl font-bold">{badgeName}</span> ! 🏆
+                  </span>
+                ) : (
+                  <span>
+                    <strong>Wrong Answer, 😔</strong> You are{" "}
+                    <span className="text-xl font-bold">{badgeName}</span>{" "}
+                  </span>
+                )
               ) : (
                 <span>
                   <strong>Oops! 😔</strong> Better luck next time!
@@ -88,7 +97,7 @@ const InputNameDialogBox = ({
           <div className="flex flex-col gap-y-4">
             <div className="flex justify-center">
               {badgeImage && (
-                <div className="h-20 w-20 rounded-full flex items-center justify-center">
+                <div className="h-36 w-36 rounded-full flex items-center justify-center">
                   <img
                     src={badgeImage}
                     alt={`${badgeName} Badge`}
@@ -128,6 +137,7 @@ const InputNameDialogBox = ({
               </Button>
             </form>
           </div>
+          <ShareOnTwitter text={tweetText} url={currentUrl} />
         </DialogContent>
       </Dialog>
     </>

@@ -2,15 +2,36 @@ import React from "react";
 import chillGuyImage from "@/assets/images/chill-guy.png";
 import { Card, CardContent } from "@/components/ui/card";
 import LeaderBoardTable from "./components/LeaderBoardTable";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/routes/routeConstant";
+import ShareOnTwitter from "@/components/ShareOnTwitter";
 
 export const LeaderBoard = () => {
+  const navigate = useNavigate();
+
+  const handleBackToHome = () => {
+    navigate(ROUTES.HOME, { replace: true });
+  };
+
+  const currentUrl = window.location.href; // Get current page URL
+  const tweetText =
+    "The battle for the most chill guy. Check it out ! #chillguyroyale";
+
   return (
     <main className="w-screen h-screen bg-gradient-to-br from-sky-300 to-sky-200 flex items-center justify-center px-4 sm:px-0">
       <Card className="relative h-[80%] lg:h-full lg:max-h-[32rem] w-full sm:w-full sm:max-w-lg md:w-full md:max-w-lg lg:w-full lg:max-w-2xl xl:w-full xl:max-w-3xl p-0">
         <CardContent className="flex flex-col items-center gap-y-6 p-1 md:px-4 xl:px-6 py-6 h-full w-full">
-          <h1 className="text-xl lg:text-2xl xl:text-3xl font-indieFlower text-blue-500">
-            LeaderBoard
-          </h1>
+          <div className=" w-full flex flex-col items-center justify-center relative">
+            <h1 className="text-xl lg:text-2xl xl:text-3xl font-indieFlower text-blue-500 ">
+              LeaderBoard
+            </h1>
+            <ShareOnTwitter text={tweetText} url={currentUrl} />
+            <ArrowLeft
+              className="text-sky-500 absolute left-0 top-1 cursor-pointer"
+              onClick={handleBackToHome}
+            />
+          </div>
           <LeaderBoardTable />
         </CardContent>
 

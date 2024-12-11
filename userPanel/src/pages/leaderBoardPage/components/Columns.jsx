@@ -54,7 +54,7 @@ export const Columns = [
     cell: ({ row }) => {
       return (
         <div className="text-sky-800 text-lg flex items-center justify-center font-indieFlower">
-          <div className="h-6 w-6 rounded-full flex justify-center items-center">
+          <div className="h-10 w-10 rounded-full flex justify-center items-center">
             <img
               src={row?.getValue("badgeImage")}
               alt=""

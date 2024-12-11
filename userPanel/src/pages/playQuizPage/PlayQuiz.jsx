@@ -18,8 +18,6 @@ const PlayQuiz = () => {
   const navigate = useNavigate();
 
   const handleEncrypt = (secretKey) => {
-    console.log("secretKey", secretKey);
-
     const encrypted = cryptoJs.AES.encrypt(
       String(secretKey),
       import.meta.env.VITE_PASS_PHARSE
@@ -62,7 +60,7 @@ const PlayQuiz = () => {
     // Check if the page has been reloaded
     const isReloaded = sessionStorage.getItem("isReloaded");
 
-    console.log("isReloaded", isReloaded);
+    // console.log("isReloaded", isReloaded);
 
     if (isReloaded) {
       // If the page was reloaded, clear the flag and navigate to home

@@ -1,14 +1,21 @@
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BuyCreditDialogBox from "./BuyCreditDialogBox";
 
-const BuyCredit = ({ credit }) => {
+const BuyCredit = ({ credit, isNotEnoughCredit, setIsNotEnoughCredit }) => {
   const [buyCreditIsOpen, setBuyCreditIsOpen] = useState(false);
 
   const buyCreditHandler = () => {
     console.log("user clicked to buy credit");
     setBuyCreditIsOpen(true);
   };
+
+  useEffect(() => {
+    if (isNotEnoughCredit) {
+      setBuyCreditIsOpen(true);
+      setIsNotEnoughCredit();
+    }
+  }, [isNotEnoughCredit]);
 
   return (
     <>

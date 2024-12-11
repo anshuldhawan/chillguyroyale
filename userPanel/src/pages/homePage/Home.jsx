@@ -14,12 +14,15 @@ import { useBoundStore } from "@/store/store";
 import base58 from "bs58";
 import StartGame from "./components/StartGame";
 import { useIsFirstRender } from "@/hooks/useIsFirstRender";
+import Footer from "@/components/ui/Footer";
+import { CustomWalletMultiButton } from "@/components/CustomWalletMultiButton";
 
 const currentStreak = 0;
 
 const Home = () => {
   const [isLoginLoader, setIsLoginLoader] = useState(false);
   const navigate = useNavigate();
+  const [isNotEnoughCredit, setIsNotEnoughCredit] = useState(false);
 
   const {
     publicKey,
@@ -121,9 +124,17 @@ const Home = () => {
     }
   }
 
+  const handleNotEnoughCredit = (value) => {
+    setIsNotEnoughCredit(true);
+  };
+
+  const handleBuyChillGuyButton = () => {
+    window.open("https://www.chillguy.io/", "_blank"); // Opens in a new tab
+  };
+
   return (
     <>
-      <main className="w-screen h-screen bg-gradient-to-br from-sky-300 to-sky-200 space-y-10 overflow-hidden">
+      <main className="w-screen h-screen bg-gradient-to-br from-sky-300 to-sky-200 space-y-10 overflow-hidden relative">
         <header className="h-20 w-full flex gap-x-4 justify-end items-center px-4">
           <Button
             variant="outline"
@@ -132,14 +143,30 @@ const Home = () => {
           >
             LeaderBoard
           </Button>
-          <WalletMultiButton />
+          <Button
+            variant="outline"
+            className="text-base font-indieFlower"
+            onClick={handleBuyChillGuyButton}
+          >
+            <img
+              src={chillGuyImage}
+              alt="chillGuy"
+              className="w-full h-full object-contain"
+            />
+            Buy ChillGuy{" "}
+          </Button>
+          <CustomWalletMultiButton />
         </header>
-        <section className="mx-auto max-w-xs sm:max-w-sm md:max-w-lg xl:max-w-xl">
+        <section className="mx-auto max-w-xs sm:max-w-sm md:max-w-lg xl:max-w-xl ">
           <Card className="relative">
             <CardContent className="flex flex-col items-center py-6 justify-between h-96">
               <div className="text-xl capitalize font-indieFlower">
                 <Show when={publicKey?.toString() && token}>
-                  <BuyCredit credit={getUserData?.user?.credits} />
+                  <BuyCredit
+                    credit={getUserData?.user?.credits}
+                    isNotEnoughCredit={isNotEnoughCredit}
+                    setIsNotEnoughCredit={() => setIsNotEnoughCredit(false)}
+                  />
                 </Show>
                 <h2 className="text-xl capitalize font-indieFlower">
                   current streak{" "}
@@ -150,7 +177,11 @@ const Home = () => {
               <p className="font-indieFlower text-lg">
                 Ready to start? click to start game!
               </p>
-              <StartGame token={token} isLoginLoader={isLoginLoader} />
+              <StartGame
+                token={token}
+                isLoginLoader={isLoginLoader}
+                handleNotEnoughCredit={handleNotEnoughCredit}
+              />
             </CardContent>
             <CardFooter></CardFooter>
             <div className="absolute h-16 w-16 -top-4 -right-4 sm:h-20 sm:w-20 sm:-top-6 sm:-right-6 md:h-24 md:w-24 md:-top-6 md:-right-6 lg:h-28 lg:w-28 lg:-top-6 lg:-right-8 xl:h-32 xl:w-32 xl:-top-12 xl:-right-12">
@@ -162,7 +193,7 @@ const Home = () => {
             </div>
           </Card>
         </section>
-        <footer></footer>
+        <Footer />
       </main>
     </>
   );
