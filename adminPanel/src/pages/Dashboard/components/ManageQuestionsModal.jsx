@@ -1,5 +1,5 @@
 import { StyledQuestionsModal } from "../styles";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Form, Input, Upload, Button, Radio } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 
@@ -98,55 +98,73 @@ const ManageQuestionsModal = ({
     setBadgeFileList(newBadgeFileList);
   };
 
-  const handleSubmit = async (values) => {
-    console.log("values", values);
-    const formData = new FormData();
+  const handleSubmit = useCallback(
+    async (values) => {
+      console.log("values", values);
+      const formData = new FormData();
+      console.log(fileList,badgeFileList,"list")
 
-    // Append main image to FormData
-    if (fileList.length > 0) {
-      formData.append("image", fileList[0]?.originFileObj); // Main image file
-    }
-
-    // Append badge image to FormData
-    if (badgeFileList.length > 0) {
-      formData.append("badgeImage", badgeFileList[0]?.originFileObj); // Badge image file
-    }
-
-    // Append other form fields
-
-    formData.append("question", values.question);
-    formData.append("option1", values.option1);
-    formData.append("option2", values.option2);
-    formData.append(
-      "correctOption",
-      values.correctOption === "option1" ? 1 : 2
-    );
-    formData.append("badgeName", values.badge);
-
-    console.log("formData", formData);
-    try {
-      // Use RTK Query to send FormData
-      const response = editData
-        ? await updateQuestion({ formData, id: editData?._id }).unwrap()
-        : await addQuestion(formData).unwrap();
-
-      // Handle response if successful
-      if (response) {
-        console.log("response", response);
-        console.log("Password updated successfully", response);
-        // Optionally reset the form or close the modal
-        toast.success(response?.message);
-        setBadgeFileList([]);
-        setFileList([]);
-
-        form.resetFields();
-        onClose(); // Close the modal after submission
+      // Append main image to FormData
+      if (
+        fileList.length > 0 && 
+        (!editData?.image || (fileList[0]?.url !== editData?.image))
+      ) {
+        formData.append("image", fileList[0]?.originFileObj); // Main image file
       }
-    } catch (error) {
-      console.error("Error updating password:", error);
-    }
-    // Send FormData to backend API
-  };
+
+      // Append badge image to FormData
+      if (
+        badgeFileList.length > 0 &&
+        (!editData?.badgeImage || badgeFileList[0]?.url !== editData?.badgeImage)
+      ) {
+        formData.append("badgeImage", badgeFileList[0]?.originFileObj); // Badge image file
+      }
+
+      // Append other form fields
+
+      formData.append("question", values.question);
+      formData.append("option1", values.option1);
+      formData.append("option2", values.option2);
+      formData.append(
+        "correctOption",
+        values.correctOption === "option1" ? 1 : 2
+      );
+      formData.append("badgeName", values.badge);
+
+      console.log("formData", formData);
+      try {
+        // Use RTK Query to send FormData
+        const response = editData
+          ? await updateQuestion({ formData, id: editData?._id }).unwrap()
+          : await addQuestion(formData).unwrap();
+
+        // Handle response if successful
+        if (response) {
+          console.log("response", response);
+          console.log("Password updated successfully", response);
+          // Optionally reset the form or close the modal
+          toast.success(response?.message);
+          setBadgeFileList([]);
+          setFileList([]);
+
+          form.resetFields();
+          onClose(); // Close the modal after submission
+        }
+      } catch (error) {
+        console.error("Error updating password:", error);
+      }
+      // Send FormData to backend API
+    },
+    [
+      addQuestion,
+      badgeFileList,
+      editData,
+      fileList,
+      form,
+      onClose,
+      updateQuestion,
+    ]
+  );
 
   return (
     <>
@@ -164,10 +182,10 @@ const ManageQuestionsModal = ({
         badgeList={badgeFileList?.length > 0}
       >
         <div className="ant-modal-body">
-          <img style={{ width: "500px" }} src={editData?.image} alt="" />
           <div className="title">
             <h2>{title}</h2>
           </div>
+
           <Form
             form={form}
             layout="vertical"
