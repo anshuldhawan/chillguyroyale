@@ -62,8 +62,8 @@ const InputNameDialogBox = ({
     }
   }, [isOpen]);
 
-  const currentUrl = `${window.location.origin}${ROUTES.LEADERBOARD}`;
-  const tweetText = `I'm ${badgeName} in Chill Guy Royale. Check it out ! #chillguyroyale`;
+  const currentUrl = "https://chillguyroyale.com";
+  const tweetText = `I'm a ${badgeName} in Chill Guy Royale. Check it out ! #chillguyroyale`;
 
   return (
     <>
@@ -77,12 +77,12 @@ const InputNameDialogBox = ({
               {badgeName ? (
                 isLast ? (
                   <span>
-                    <strong>Congratulations! 🎉</strong> You've won the{" "}
+                    <strong>Congratulations! 🎉</strong><br/> You are a{" "}
                     <span className="text-xl font-bold">{badgeName}</span> ! 🏆
                   </span>
                 ) : (
                   <span>
-                    <strong>Wrong Answer, 😔</strong> You are{" "}
+                    <strong>Wrong answer, your streak ended. 😔</strong><br/> You are a{" "}
                     <span className="text-xl font-bold">{badgeName}</span>{" "}
                   </span>
                 )
@@ -106,6 +106,7 @@ const InputNameDialogBox = ({
                 </div>
               )}
             </div>
+            <ShareOnTwitter text={tweetText} url={currentUrl} />
             <form
               onSubmit={handleSubmit(onSubmit)}
               className="flex flex-col gap-y-4"
@@ -113,6 +114,7 @@ const InputNameDialogBox = ({
               <div>
                 <Input
                   id="name"
+                  placeholder="Enter your name"
                   type="text"
                   {...register("name", {
                     required: "Name is required",
@@ -137,7 +139,6 @@ const InputNameDialogBox = ({
               </Button>
             </form>
           </div>
-          <ShareOnTwitter text={tweetText} url={currentUrl} />
         </DialogContent>
       </Dialog>
     </>

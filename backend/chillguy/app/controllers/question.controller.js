@@ -67,18 +67,22 @@ class QuestionsController {
         throw new NotFoundError("Question not found.");
       }
       const { question, option1, option2, correctOption, badgeName } = req.body;
-  
+
       if (question) questionData.question = question;
       if (option1) questionData.option1 = option1;
       if (option2) questionData.option2 = option2;
-      if (correctOption !== undefined) questionData.correctOption = correctOption;
+      if (correctOption !== undefined)
+        questionData.correctOption = correctOption;
       if (badgeName) questionData.badgeName = badgeName;
-  
+
       const uploadsDir = path.join(__dirname, "../../uploads");
-  
+
       // If there is a new image, update the image field and remove the old image
       if (req.files && req.files.image) {
-        const oldImagePath = questionData.image?.replace(`${HOSTNAME}/uploads/`, "");
+        const oldImagePath = questionData.image?.replace(
+          `${HOSTNAME}/uploads/`,
+          ""
+        );
         if (oldImagePath) {
           const fullPath = path.join(uploadsDir, oldImagePath);
           if (fs.existsSync(fullPath)) {
@@ -87,21 +91,14 @@ class QuestionsController {
         }
         questionData.image = `${HOSTNAME}/uploads/${req.files.image[0].filename}`;
       }
-  
+
       // If there is a new badge image, update the badge image field and remove the old badge image
       if (req.files && req.files.badgeImage) {
-        const oldBadgeImagePath = questionData.badgeImage?.replace(`${HOSTNAME}/uploads/`, "");
-        if (oldBadgeImagePath) {
-          const fullBadgePath = path.join(uploadsDir, oldBadgeImagePath);
-          if (fs.existsSync(fullBadgePath)) {
-            fs.unlinkSync(fullBadgePath);
-          }
-        }
         questionData.badgeImage = `${HOSTNAME}/uploads/${req.files.badgeImage[0].filename}`;
       }
-  
+
       const updatedQuestion = await questionData.save();
-  
+
       return res.status(200).json({
         message: "Question updated successfully",
         question: updatedQuestion,
@@ -292,16 +289,49 @@ class QuestionsController {
   }
 
   async leaderBoard(req, res) {
-    const topUsers = await LeaderBoards.find({ score: { $gt: 0 } })
-      .sort({ score: -1 })
-      .limit(25)
-      .populate("userId", "name")
-      .lean();
-
-    return res.status(200).json({
-      leaderboard: topUsers,
-    });
+    try {
+      const topUsers = await LeaderBoards.aggregate([
+        { $match: { score: { $gt: 0 } } },
+        { $sort: { userId: 1, score: -1 } },
+        {
+          $group: {
+            _id: "$userId",
+            highestScore: { $first: "$score" },
+            badge: { $first: "$badge" },
+            badgeImage: { $first: "$badgeImage" },
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "_id",
+            foreignField: "_id",
+            as: "userDetails",
+          },
+        },
+        { $unwind: "$userDetails" },
+        { $sort: { highestScore: -1 } },
+        { $limit: 25 },
+      ]);
+  
+      const formattedLeaderboard = topUsers.map((entry) => ({
+        userId: {
+          name: entry.userDetails.name,
+        },
+        score: entry.highestScore,
+        badge: entry.badge,
+        badgeImage: entry.badgeImage,
+      }));
+  
+      return res.status(200).json({
+        leaderboard: formattedLeaderboard,
+      });
+    } catch (error) {
+      console.error("Error fetching leaderboard:", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
   }
+  
 }
 
 module.exports = QuestionsController;
