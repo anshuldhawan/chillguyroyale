@@ -3,6 +3,9 @@ const { InvalidInputError } = require("../errors/invalid_input_error");
 const { NotFoundError } = require("../errors/not_found_error");
 const Transaction = require("../model/transaction");
 const Users = require("../model/userModal");
+const {
+  Connection,
+} = require("@solana/web3.js");
 
 class CreditController {
   // Add a new credit package
@@ -87,10 +90,15 @@ class CreditController {
     if (!userId || !currency || !amountIn || !credit || !transactionHash) {
       throw new InvalidInputError("All fields are required.");
     }
-    const existingTransaction = await Transaction.findOne({ transactionHash }).lean();
+
+    // Check if the transaction has already been processed
+    const existingTransaction = await Transaction.findOne({
+      transactionHash,
+    }).lean();
     if (existingTransaction) {
       throw new InvalidInputError("Invalid Transaction. Please try again");
     }
+
     // Create the transaction entry
     const newTransaction = new Transaction({
       userId,
@@ -101,19 +109,45 @@ class CreditController {
     });
     await newTransaction.save();
 
-    const user = await Users.findById(userId);
+    const connection = new Connection(
+      "https://mainnet.helius-rpc.com/?api-key=dfb8c139-1703-44ad-8209-de11036a4882",
+      "confirmed"
+    );
 
-    if (!user) {
-      throw new NotFoundError("User not found.");
+    try {
+      // Verify the transaction on Solana
+      const transactionStatus = await connection.getTransaction(
+        transactionHash,
+        { commitment: "confirmed" }
+      );
+
+      if (!transactionStatus) {
+        throw new Error("Transaction not found or failed.");
+      }
+
+      const { meta } = transactionStatus;
+      console.log("meta--------------", meta);
+      if (meta && meta.err) {
+        throw new Error("Transaction failed.");
+      }
+
+      // If the transaction was successful
+      const user = await Users.findById(userId);
+      if (!user) {
+        throw new NotFoundError("User not found.");
+      }
+      user.credits += Number(credit);
+      await user.save();
+
+      return res.status(201).json({
+        message: "Transaction verified, and credits updated successfully.",
+        updatedUser: user,
+      });
+    } catch (error) {
+      console.error("Error verifying transaction:", error);
+      throw new Error("Transaction verification failed.");
     }
-    user.credits += Number(credit);
-    await user.save();
-
-    return res.status(201).json({
-      message: "Transaction created and credits updated successfully.",
-      updatedUser: user,
-    });
   }
 }
 
-module.exports =  CreditController;
+module.exports = CreditController;

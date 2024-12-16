@@ -5,6 +5,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useMutation } from "react-query";
 import InputNameDialogBox from "./InputNameDialogBox";
 import { useNavigate } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
+import { ROUTES } from "@/routes/routeConstant";
 
 const Options = ({
   QUESTIONS_DATA,
@@ -20,6 +22,7 @@ const Options = ({
   const [isDialogBoxOpen, setIsDialogBoxOpen] = useState(false);
   const badgeData = useRef(null);
   const isLastQuestion = useRef(null);
+  const navigate = useNavigate()
 
   // useEffect(() => {
   //   if (questionIsLoading) {
@@ -56,6 +59,20 @@ const Options = ({
       },
       onError: (error) => {
         console.error("Error validating answer:", error);
+        toast({
+          variant:"destructive",
+          title: (
+            <span className="font-indieFlower">
+              "Uh oh! Something went wrong."
+            </span>
+          ),
+          description: (
+            <span className="font-indieFlower">
+              "{error?.response?.data?.message}"
+            </span>
+          ),
+        });
+        navigate(ROUTES.HOME, {replace: true})
       },
     }
   );

@@ -1,4 +1,10 @@
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import { QUESTIONS_DUMMY_DATA } from "@/data/DummyData";
 import Options from "./components/Options";
@@ -80,6 +86,11 @@ const PlayQuiz = () => {
     <>
       <main className="min-w-screen min-h-screen bg-gradient-to-br from-sky-300 to-sky-200 p-4 md:p-6 lg:p-8 xl:p-12">
         <Card className="relative border border-blue-300 h-full w-full bg-white">
+          <CardHeader className="p-0 bg-yellow-700 flex justify-center items-center">
+            <CardTitle className="text-white font-indieFlower mt-1  text-center w-full">
+              Chill Guy Royale
+            </CardTitle>
+          </CardHeader>
           <CardContent className="flex flex-col items-center gap-y-8 px-1.5 md:px-6 py-6 justify-between">
             <h2 className="text-2xl md:text-4xl font-indieFlower">
               current streak:{" "}

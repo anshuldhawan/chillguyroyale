@@ -70,18 +70,16 @@ const InputNameDialogBox = ({
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogContent className="w-[90%] sm:w-full sm:max-w-xs md:w-full md:max-w-md lg:w-full lg:max-w-lg xl:w-full xl:max-w-xl h-auto px-1 sm:px-2 md:px-3 lg:px-4 xl:px-6">
           <DialogHeader>
-            <DialogTitle className="text-xl text-center text-sky-500 capitalize font-indieFlower">
-              Please Enter Your Name
-            </DialogTitle>
             <DialogDescription className="text-sm text-center text-sky-800 font-indieFlower">
               {badgeName ? (
                 isLast ? (
-                  <span>
+                  
+                  <span className="text-xl text-center text-sky-500 capitalize font-indieFlower">
                     <strong>Congratulations! 🎉</strong><br/> You are a{" "}
                     <span className="text-xl font-bold">{badgeName}</span> ! 🏆
                   </span>
                 ) : (
-                  <span>
+                  <span className="text-xl text-center text-sky-500 capitalize font-indieFlower" >
                     <strong>Wrong answer, your streak ended. 😔</strong><br/> You are a{" "}
                     <span className="text-xl font-bold">{badgeName}</span>{" "}
                   </span>
