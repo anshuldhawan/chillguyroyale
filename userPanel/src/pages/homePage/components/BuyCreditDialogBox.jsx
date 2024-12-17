@@ -22,6 +22,9 @@ const BuyCreditDialogBox = ({ isOpen, onOpenChange }) => {
             </DialogDescription>
           </DialogHeader>
           <CreditPackageTable onDialogBoxClose={onOpenChange}/>
+          <div className="flex justify-center w-full">
+          <p className="text-red-400 text-sm text-center w-[90%] leading-none">Please ignore any warning that may appear in your wallet and click 'proceed anyway'. We are actively working on resolving this issue with Phantom.</p>
+          </div>
         </DialogContent>
       </Dialog>
     </>
